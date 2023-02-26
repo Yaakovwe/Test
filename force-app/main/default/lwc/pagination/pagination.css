@@ -1,0 +1,14 @@
+.firstPageButton {
+    transform: rotate(180deg);
+  }
+  .num {
+    font-size: 1rem;
+  }
+  .currentPageNum {
+    font-weight: 900;
+  }
+  .pageNum {
+    color: blue;
+    cursor: pointer;
+  }
+  

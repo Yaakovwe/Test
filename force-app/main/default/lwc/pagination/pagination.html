@@ -1,0 +1,92 @@
+<template>
+    <template if:true={renderPagination}>
+      <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_3-of-12">
+          <div class="slds-m-top_x-small">
+            <label for="size">Show:</label>
+            <select id="size" onclick={handlex} onchange={handlePageSize}>
+              <template for:each={options} for:item="option">
+                <option key={option.value} value={option.value} selected={option.selected}>
+                  {option.label}
+                </option>
+              </template>
+            </select>
+          </div>
+        </div>
+        <div class="slds-col slds-size_9-of-12">
+          <div class="slds-grid slds-grid_vertical-align-center">
+            <div class="firstPageButton">
+              <lightning-button-icon
+                disabled={isDisabledFirstPage}
+                icon-name="utility:macros"
+                alternative-text="First Page"
+                title="First Page"
+                size="large"
+                variant="bare"
+                data-name="active"
+                name="First"
+                onclick={handleBtnClick}
+              ></lightning-button-icon>
+            </div>
+            <lightning-button-icon
+              disabled={isDisabledFirstPage}
+              icon-name="utility:left"
+              alternative-text="Previous Page"
+              title="Previous Page"
+              size="large"
+              data-name="active"
+              variant="bare"
+              name="Previous"
+              onclick={handleBtnClick}
+            ></lightning-button-icon>
+            <template iterator:it={indexesRenderedPages}>
+              <span
+                key={it.value.value}
+                if:false={it.value.isCurrentPage}
+                class="num pageNum slds-var-m-left_x-small"
+                data-index={it.value.value}
+                onclick={renderPage}
+                data-name="active"
+                >{it.value.value}</span
+              >
+              <span
+                key={it.value.value}
+                if:true={it.value.isCurrentPage}
+                class="num currentPageNum slds-var-m-left_x-small"
+                >{it.value.value}</span
+              >
+            </template>
+            <lightning-button-icon
+              disabled={isDisabledLastPage}
+              icon-name="utility:right"
+              class="slds-var-m-left_x-small"
+              alternative-text="Next Page"
+              title="Next Page"
+              size="large"
+              variant="bare"
+              data-name="active"
+              name="Next"
+              onclick={handleBtnClick}
+            ></lightning-button-icon>
+            <lightning-button-icon
+              disabled={isDisabledLastPage}
+              class="lastPage"
+              icon-name="utility:macros"
+              alternative-text="Last Page"
+              title="Last Page"
+              size="large"
+              data-name="active"
+              variant="bare"
+              name="Last"
+              onclick={handleBtnClick}
+            ></lightning-button-icon>
+            Page&nbsp; <strong>{pageNo} </strong></strong> &nbsp;out of <strong> &nbsp;{totalPages}</strong>
+            <!-- <span class="">page &nbsp;{currPage} &nbsp;out of {pagesCount}</span> -->
+          </div>
+          
+        </div>
+      </div>
+      </template>
+      </template>
+    
+  

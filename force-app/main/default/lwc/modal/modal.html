@@ -1,0 +1,65 @@
+<template>
+    <template if:true={showModal}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        class={getSectionClass}
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+              {modalHeading}
+            </h2>
+          </header>
+          <div
+            class="slds-modal__content slds-var-p-around_medium"
+            style={getContentStyle}
+            id="modal-content-id-1"
+          >
+            <p>{message}</p>
+            <br />
+            <p>{submessage}</p>
+            <slot name="content">
+                <div class="slds-grid slds-gutters">
+                    <template for:each={columns} for:item="column">
+                        <div class="column slds-col slds-p-horizontal_medium" key={column.key}>
+                            <template for:each={column.inputs} for:item="input">
+                                <template if:true={input.isText}>
+                                    <lightning-input key={Id} type="text" label={input.label} onchange={handleFormInputChange} name={Id} value={input.value}></lightning-input>
+                                </template>
+                                <template if:true={input.isNumeric}>
+                                    <lightning-input key={Id} type="number" name={Id} label={input.label} onchange={handleFormInputChange} value={input.value}></lightning-input>
+                                </template>
+                            </template>
+                        </div>
+                    </template>
+                  </div>
+            </slot>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning-button
+              variant="brand-outline"
+              label={closeLabel}
+              title="Close"
+              onclick={handleClose}
+              class="slds-var-m-left_x-small"
+              disabled={disableCloseButton}
+            >
+            </lightning-button>
+            <lightning-button
+              variant="brand"
+              label={saveLabel}
+              title="save"
+              onclick={handleSave}
+              class="slds-var-m-left_x-small"
+              disabled={disableSaveButton}
+            ></lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+  </template>
