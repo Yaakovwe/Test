@@ -2,7 +2,7 @@ import { LightningElement, api, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 export default class User extends LightningElement {
-	@api user;
+	@api user = {};
 	@api showAddUser = false;
 	googleMapUrl = "http://www.google.com/maps/place/";
 	sectionName;
@@ -15,8 +15,20 @@ export default class User extends LightningElement {
 		{
 			index: 1,
 			inputs: [
-				{ Id: 1, label: "First Name", isText: true, key: "firstName" },
-				{ Id: 2, label: "Last Name", isText: true, key: "lastName" },
+				{
+					Id: 1,
+					label: "First Name",
+					isText: true,
+					key: "firstName",
+					isRequired: true,
+				},
+				{
+					Id: 2,
+					label: "Last Name",
+					isText: true,
+					key: "lastName",
+					isRequired: true,
+				},
 				{ Id: 3, label: "Gender", isText: true, key: "gender" },
 			],
 		},
@@ -30,7 +42,7 @@ export default class User extends LightningElement {
 		},
 	];
 
-	@track columns = [
+	columns = [
 		{
 			index: 1,
 			inputs: [
@@ -50,7 +62,7 @@ export default class User extends LightningElement {
 	];
 
 	connectedCallback() {
-		if (this.user) {
+		if (this.user && !this.isNew) {
 			this.sectionName = this.user.firstName + " " + this.user.lastName;
 			this.googleMapUrl += this.user.address;
 			this.addValuesFromParent();
@@ -74,7 +86,9 @@ export default class User extends LightningElement {
 	}
 
 	handleOpen() {
+		this.columns = [];
 		this.columns = this.cols;
+		this.user = {};
 		this.template.querySelector("c-modal").openModal();
 	}
 
@@ -89,6 +103,14 @@ export default class User extends LightningElement {
 			"User data Successfully Updated",
 			"success"
 		);
+		if (this.showAddUser) {
+			const data = this.user;
+			const dataToSend = new CustomEvent("handleadd", {
+				detail: data,
+			});
+
+			this.dispatchEvent(dataToSend);
+		}
 		this.closeConformationModal();
 	}
 
@@ -98,6 +120,9 @@ export default class User extends LightningElement {
 				if (this.temp.hasOwnProperty(input.label)) {
 					const label = input.label;
 					input.value = this.temp[label];
+					const user = { ...this.user };
+					user[input.key] = this.temp[label];
+					this.user = user;
 					delete this.temp[label];
 				}
 			});
@@ -117,5 +142,14 @@ export default class User extends LightningElement {
 				variant: variant,
 			})
 		);
+	}
+
+	handleDelete() {
+		console.log(JSON.stringify(this.user));
+		const obj = { data: this.user.email };
+		const dataToParent = new CustomEvent("handledelete", {
+			detail: obj,
+		});
+		this.dispatchEvent(dataToParent);
 	}
 }

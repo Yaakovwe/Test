@@ -3,6 +3,7 @@ import getRandomUsers from "@salesforce/apex/UserService.getRandomUsers";
 
 export default class UserWizard extends LightningElement {
 	@track users = [];
+	@track user = {};
 	currPageUsers = [];
 	renderPagination = false;
 	hasPageChanged = false;
@@ -10,6 +11,7 @@ export default class UserWizard extends LightningElement {
 	modalContentStyle = "height:65%";
 	modalGridStyleClass = "slds-medium-size_1-of-2";
 	showAddUser = true;
+	show = false;
 	get usersToRender() {
 		return this.currPageUsers;
 	}
@@ -19,6 +21,7 @@ export default class UserWizard extends LightningElement {
 			const users = this.handleResults(results);
 			this.users = users;
 			this.renderPagination = true;
+			this.show = true;
 		} else {
 			console.log("oops");
 		}
@@ -31,8 +34,8 @@ export default class UserWizard extends LightningElement {
 		rawArr.forEach((result) => {
 			const user = {};
 			user.gender = result.gender;
-			user.firstName = result.name.first;
-			user.lastName = result.name.last;
+			user.firstName = result?.name.first;
+			user.lastName = result?.name.last;
 			user.email = result.email;
 			user.id = result.location.value;
 			user.address = this.getAddress(result.location);
@@ -60,11 +63,30 @@ export default class UserWizard extends LightningElement {
 		this.currPageLocations = event.detail.records;
 	}
 
-	handleAddUser() {
-		this.template.querySelector("c-modal").openModal();
+	add(event) {
+		this.showAddUser = false;
+		const users = this.users;
+		const user = event.detail;
+		if (!user.hasOwnProperty("firstName")) {
+			user.firstName = "";
+		}
+		if (!user.hasOwnProperty("lastName")) {
+			user.lastName = "";
+		}
+		users.push(event.detail);
+		this.users = users;
+		this.user = undefined;
+		this.showAddUser = true;
 	}
 
-	closeConformationModal() {
-		this.template.querySelector("c-modal").closeModal();
+	del(event) {
+		this.show = false;
+		console.log("data" + JSON.stringify(event.detail));
+		const email = JSON.parse(JSON.stringify(event.detail.data));
+
+		const users = this.users;
+		const filteredUsers = users.filter(user.email != email);
+		this.users = filteredUsers;
+		this.show = true;
 	}
 }
