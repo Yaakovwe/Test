@@ -1,25 +1,28 @@
 <template>
-    <div class="slds-card">
-        <c-user 
-            key={id} 
-            user={user} 
-            show-add-user={showAddUser} 
-            onhandleadd={add} 
-        ></c-user>
-      <lightning-accordion allow-multiple-sections-open active-section-name={openSections}>
-        <div class="slds-grid slds-grid_vertical slds-gutters">
-          <div class="slds-col"></div>
-          <lightning-accordion-section name="Users" label="Users">
-            <div class="slds-col">
-                <template if:true={show}>
-                    <template for:each={users} for:item="user">
-                        <c-user key={id} user={user} onhandledelete={del}></c-user>
-                    </template>
-                </template>
+    <template if:true={isReady}>
+        <div class="slds-card">
+            <c-user 
+                key={id} 
+                user={user} 
+                show-add-user={showAddUser} 
+                onhandleadd={add} 
+            ></c-user>
+        <lightning-accordion allow-multiple-sections-open active-section-name={openSections}>
+            <div class="slds-grid slds-grid_vertical slds-gutters">
+            <div class="slds-col"></div>
+            <lightning-accordion-section name="Users" label="Users">
+                <div class="slds-col">
+                        <template for:each={usersToRender} for:item="user">
+                            <c-user key={user.email} user={user} onhandledelete={del}></c-user>
+                        </template>
+                </div>
+                <c-pagination input-records={users} onpagination={handlePagination}></c-pagination>
+            </lightning-accordion-section>
             </div>
-              <c-pagination input-records={users} onpagination={handlePagination}></c-pagination>
-          </lightning-accordion-section>
+        </lightning-accordion>
         </div>
-      </lightning-accordion>
-    </div>
+    </template>
+    <template if:false={isReady}>
+        <lightning-spinner alternative-text="Loading" size="xx-small"></lightning-spinner>
+    </template>
   </template>

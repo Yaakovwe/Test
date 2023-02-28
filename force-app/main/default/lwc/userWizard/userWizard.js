@@ -1,5 +1,6 @@
 import { LightningElement, track } from "lwc";
 import getRandomUsers from "@salesforce/apex/UserService.getRandomUsers";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 export default class UserWizard extends LightningElement {
 	@track users = [];
@@ -12,6 +13,10 @@ export default class UserWizard extends LightningElement {
 	modalGridStyleClass = "slds-medium-size_1-of-2";
 	showAddUser = true;
 	show = false;
+
+	get isReady() {
+		return this.show;
+	}
 	get usersToRender() {
 		return this.currPageUsers;
 	}
@@ -28,6 +33,7 @@ export default class UserWizard extends LightningElement {
 	}
 
 	handleResults(results) {
+		console.log(results);
 		const resultsParsed = JSON.parse(results);
 		const rawArr = resultsParsed.results;
 		const users = [];
@@ -60,7 +66,7 @@ export default class UserWizard extends LightningElement {
 
 	handlePagination(event) {
 		this.hasPageChanged = !this.hasPageChanged;
-		this.currPageLocations = event.detail.records;
+		this.currPageUsers = event.detail.records;
 	}
 
 	add(event) {
@@ -81,12 +87,20 @@ export default class UserWizard extends LightningElement {
 
 	del(event) {
 		this.show = false;
-		console.log("data" + JSON.stringify(event.detail));
 		const email = JSON.parse(JSON.stringify(event.detail.data));
-
 		const users = this.users;
-		const filteredUsers = users.filter(user.email != email);
-		this.users = filteredUsers;
+		this.users = users.filter((user) => user.email != email);
+		this.showToastMsg("Success", "User Successfully Deleted", "success");
 		this.show = true;
+	}
+
+	showToastMsg(title, message, variant) {
+		this.dispatchEvent(
+			new ShowToastEvent({
+				title: title,
+				message: message,
+				variant: variant,
+			})
+		);
 	}
 }

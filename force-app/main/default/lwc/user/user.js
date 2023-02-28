@@ -11,6 +11,7 @@ export default class User extends LightningElement {
 	modalGridStyleClass = "slds-medium-size_1-of-2";
 	temp = {};
 	isNew = false;
+	show = false;
 	cols = [
 		{
 			index: 1,
@@ -61,6 +62,10 @@ export default class User extends LightningElement {
 		},
 	];
 
+	get isReady() {
+		return this.show;
+	}
+
 	connectedCallback() {
 		if (this.user && !this.isNew) {
 			this.sectionName = this.user.firstName + " " + this.user.lastName;
@@ -69,6 +74,7 @@ export default class User extends LightningElement {
 		} else {
 			this.isNew = true;
 		}
+		this.show = true;
 	}
 
 	addValuesFromParent() {
@@ -97,12 +103,10 @@ export default class User extends LightningElement {
 	}
 
 	handleModalConfirmation() {
+		this.show = false;
 		this.handleSaveData();
-		this.showToastMsg(
-			"Success",
-			"User data Successfully Updated",
-			"success"
-		);
+		let message = this.isNew ? " Added" : " Modified";
+		this.showToastMsg("Success", "User  Successfully" + message, "success");
 		if (this.showAddUser) {
 			const data = this.user;
 			const dataToSend = new CustomEvent("handleadd", {
@@ -112,6 +116,7 @@ export default class User extends LightningElement {
 			this.dispatchEvent(dataToSend);
 		}
 		this.closeConformationModal();
+		this.show = true;
 	}
 
 	handleSaveData() {
@@ -145,11 +150,12 @@ export default class User extends LightningElement {
 	}
 
 	handleDelete() {
-		console.log(JSON.stringify(this.user));
+		this.show = false;
 		const obj = { data: this.user.email };
 		const dataToParent = new CustomEvent("handledelete", {
 			detail: obj,
 		});
 		this.dispatchEvent(dataToParent);
+		this.show = true;
 	}
 }
